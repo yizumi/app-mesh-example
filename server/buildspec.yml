@@ -17,3 +17,6 @@ phases:
     commands:
       - echo Pushing docker image
       - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo Canary release started
+      - ./server/update-service.sh
+      - echo Canary release completed
