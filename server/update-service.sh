@@ -83,9 +83,7 @@ create_virtual_node() {
 EOF
 )
   # Create app mesh virtual node #
-  aws appmesh create-virtual-node \
-    --mesh-name $MESH_NAME \ --virtual-node-name $VIRTUAL_NODE_NAME \
-    --spec "$SPEC"
+  aws appmesh create-virtual-node --mesh-name $MESH_NAME --virtual-node-name $VIRTUAL_NODE_NAME --spec "$SPEC"
 }
 
 # based on the existing route definition, we'll add the newly created virtual node to the list, but not forwarding any traffic
