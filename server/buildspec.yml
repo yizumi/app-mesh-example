@@ -4,9 +4,11 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - export IMAGE_TAG=`echo ${CODEBUILD_WEBHOOK_HEAD_REF#refs/heads/} | sed 's/\//-/g'`
+      - export TARGET_ENV=${CODEBUILD_WEBHOOK_BASE_REF#refs/heads/}
       - echo PROJECT_NAME is $PROJECT_NAME
       - echo SERVICE_NAME is $SERVICE_NAME
       - echo IMAGE_TAG is $IMAGE_TAG
+      - echo TARGET_ENV is $TARGET_ENV
       - aws --version
       - $(aws ecr get-login --region ap-northeast-1 --no-include-email)
       - REPOSITORY_URI=373656256964.dkr.ecr.ap-northeast-1.amazonaws.com/echo/server
@@ -16,11 +18,14 @@ phases:
       - echo Building the Doker Image
       - docker build -t echo/server ./server
       - docker tag echo/server $REPOSITORY_URI:$IMAGE_TAG
+      - docker tag echo/server $REPOSITORY_URI:$TARGET_ENV
       - echo Build completed on `date`
   post_build:
     commands:
       - echo Pushing docker image
       - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push $REPOSITORY_URI:$TARGET_ENV
       - echo Canary release started
-      # cd server && ./update-service.sh
+      # cd server && ./update-service.sh $TARGET_ENV
+      # cd server && ./delete-unused-resources.sh $TARGET_ENV
       - echo Canary release completed
