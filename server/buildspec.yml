@@ -1,11 +1,9 @@
-version: 0.2
+version: 1.2
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - echo CODEBUILD_WEBHOOK_BASE_REF is ${CODEBUILD_WEBHOOK_BASE_REF}
-      - echo CODEBUILD_WEBHOOK_HEAD_REF is ${CODEBUILD_WEBHOOK_HEAD_REF}
-      - echo CODEBUILD_WEBHOOK_TRIGGER is ${CODEBUILD_WEBHOOK_TRIGGER#branch/}
+      - export IMAGE_TAG=`echo ${CODEBUILD_WEBHOOK_HEAD_REF#refs/heads/} | sed 's/\//-/g'`
       - echo PROJECT_NAME is $PROJECT_NAME
       - echo SERVICE_NAME is $SERVICE_NAME
       - echo IMAGE_TAG is $IMAGE_TAG
