@@ -21,8 +21,7 @@ phases:
   post_build:
     commands:
       - echo Pushing docker image
-      - docker push $REPOSITORY_URI:$IMAGE_TAG
-      - docker push $REPOSITORY_URI:$TARGET_ENV
+      - docker push $REPOSITORY_URI:latest
       - echo Canary release started
       - aws lambda invoke --function-name SlowDeployToQA1 --cli-binary-format raw-in-base64-out --payload '{"runtime_service_name":"echo_server:'$TARGET_ENV'"}' response.json
       - echo Canary release completed
