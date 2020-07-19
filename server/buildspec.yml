@@ -3,22 +3,20 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - export IMAGE_TAG=`echo ${CODEBUILD_WEBHOOK_HEAD_REF#refs/heads/} | sed 's/\//-/g'`
-      - export TARGET_ENV=${CODEBUILD_WEBHOOK_BASE_REF#refs/heads/}
+      - export TARGET_ENV=`echo ${CODEBUILD_WEBHOOK_BASE_REF#refs/heads/} | sed 's/master/prod/g'`
+      - export REPOSITORY_URI=`echo 373656256964.dkr.ecr.ap-northeast-1.amazonaws.com/echo-${TARGET_ENV}/server | sed 's/-prod//g'`
       - echo PROJECT_NAME is $PROJECT_NAME
       - echo SERVICE_NAME is $SERVICE_NAME
-      - echo IMAGE_TAG is $IMAGE_TAG
       - echo TARGET_ENV is $TARGET_ENV
+      - echo REPOSITORY_URI is $REPOSITORY_URI
       - aws --version
       - $(aws ecr get-login --region ap-northeast-1 --no-include-email)
-      - REPOSITORY_URI=373656256964.dkr.ecr.ap-northeast-1.amazonaws.com/echo/server
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Doker Image
       - docker build -t echo/server ./server
-      - docker tag echo/server $REPOSITORY_URI:$IMAGE_TAG
-      - docker tag echo/server $REPOSITORY_URI:$TARGET_ENV
+      - docker tag echo/server $REPOSITORY_URI:latest
       - echo Build completed on `date`
   post_build:
     commands:
@@ -26,6 +24,5 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - docker push $REPOSITORY_URI:$TARGET_ENV
       - echo Canary release started
-      # cd server && ./update-service.sh $TARGET_ENV
-      # cd server && ./delete-unused-resources.sh $TARGET_ENV
+      - aws lambda invoke --function-name SlowDeployToQA1 --cli-binary-format raw-in-base64-out --payload '{"runtime_service_name":"echo_server:'$TARGET_ENV'"}' response.json
       - echo Canary release completed
