@@ -92,9 +92,9 @@ print_endpoint() {
 }
 
 deploy_stacks() {
-    deploy_images
-    deploy_infra
-    deploy_mesh
+    # deploy_images
+    # deploy_infra
+    # deploy_mesh
     deploy_app
 
     print_bastion
@@ -120,7 +120,7 @@ delete_images() {
 }
 
 delete_stacks() {
-    # delete_cfn_stack "${PROJECT_NAME}-app"
+    delete_cfn_stack "${PROJECT_NAME}-app"
 
     delete_cfn_stack "${PROJECT_NAME}-infra"
 
