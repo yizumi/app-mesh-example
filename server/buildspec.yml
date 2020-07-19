@@ -11,7 +11,6 @@ phases:
       - echo SERVICE_NAME is $SERVICE_NAME
       - echo TARGET_ENV is $TARGET_ENV
       - echo REPOSITORY_URI is $REPOSITORY_URI
-      - pip install --upgrade awscli==2.0.22
       - aws --version
       - $(aws ecr get-login --region ap-northeast-1 --no-include-email)
   build:
@@ -26,5 +25,5 @@ phases:
       - echo Pushing docker image
       - docker push $REPOSITORY_URI:latest
       - echo Canary release started
-      - aws lambda invoke --function-name SlowDeployToQA1 --cli-binary-format raw-in-base64-out --payload '{"runtime_service_name":"echo_server:'$TARGET_ENV'"}' response.json
+      - aws lambda invoke --function-name SlowDeployToQA1 --payload '{"runtime_service_name":"echo_server:'$TARGET_ENV'"}' response.json
       - echo Canary release completed
