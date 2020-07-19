@@ -194,7 +194,7 @@ Resources:
     Properties:
       RequiresCompatibilities:
       - 'FARGATE'
-      Family: 'echo_client'
+      Family: !Sub '${ProjectName}-echo-client'
       NetworkMode: 'awsvpc'
       Cpu: 256
       Memory: 512
@@ -264,14 +264,14 @@ Resources:
         - Name: 'APPMESH_VIRTUAL_NODE_NAME'
           Value: !Sub 'mesh/${ProjectName}-mesh/virtualNode/echo_client'
         - Name: 'ENVOY_LOG_LEVEL'
-          Value: 'debug'
+          Value: 'info'
 
   EchoServerTaskDef:
     Type: AWS::ECS::TaskDefinition
     Properties:
       RequiresCompatibilities:
       - 'FARGATE'
-      Family: 'echo_server'
+      Family: !Sub '${ProjectName}-echo-server'
       NetworkMode: 'awsvpc'
       Cpu: 256
       Memory: 512
@@ -341,7 +341,7 @@ Resources:
         - Name: 'APPMESH_VIRTUAL_NODE_NAME'
           Value: !Sub 'mesh/${ProjectName}-mesh/virtualNode/echo_server'
         - Name: 'ENVOY_LOG_LEVEL'
-          Value: 'debug'
+          Value: 'info'
 
   EchoServerRegistry:
     Type: AWS::ServiceDiscovery::Service

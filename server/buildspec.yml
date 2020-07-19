@@ -26,6 +26,5 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - docker push $REPOSITORY_URI:$TARGET_ENV
       - echo Canary release started
-      # cd server && ./update-service.sh $TARGET_ENV
-      # cd server && ./delete-unused-resources.sh $TARGET_ENV
+      - aws lambda invoke --function-name SlowDeployToQA1 --cli-binary-format raw-in-base64-out --payload '{"runtime_service_name":"echo_server:'$TARGET_ENV'"}' response.json
       - echo Canary release completed
