@@ -16,7 +16,7 @@ import (
 
 type server struct{}
 
-const version = "1.2"
+const version = "1.3"
 
 func (s *server) Check(ctx context.Context, in *health.HealthCheckRequest) (*health.HealthCheckResponse, error) {
   log.Printf("Received Check request: %v", in)
