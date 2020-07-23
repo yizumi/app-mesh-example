@@ -2,28 +2,21 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
-      - export TARGET_ENV=`echo ${CODEBUILD_WEBHOOK_BASE_REF#refs/heads/}`
-      - export TARGET_ENV=`if [ -z "$TARGET_ENV" ]; then echo ${CODEBUILD_WEBHOOK_HEAD_REF#refs/heads/}; else echo $TARGET_ENV; fi`
-      - export TARGET_ENV=`echo $TARGET_ENV | sed 's/master/prod/g'`
-      - export REPOSITORY_URI=`echo 373656256964.dkr.ecr.ap-northeast-1.amazonaws.com/echo-${TARGET_ENV}/server | sed 's/-prod//g'`
-      - echo PROJECT_NAME is $PROJECT_NAME
-      - echo SERVICE_NAME is $SERVICE_NAME
-      - echo TARGET_ENV is $TARGET_ENV
+      - if [ -z "$TARGET_ENV" ]; then echo 'Missing TARGET_ENV'; exit 1; fi
+      - export REPOSITORY_URI=373656256964.dkr.ecr.ap-northeast-1.amazonaws.com/echo/server
       - echo REPOSITORY_URI is $REPOSITORY_URI
+      - echo TARGET_ENV is $TARGET_ENV
       - aws --version
+      - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --region ap-northeast-1 --no-include-email)
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Doker Image
       - docker build -t echo/server ./server
-      - docker tag echo/server $REPOSITORY_URI:latest
+      - docker tag echo/server $REPOSITORY_URI:$TARGET_ENV
       - echo Build completed on `date`
   post_build:
     commands:
       - echo Pushing docker image
-      - docker push $REPOSITORY_URI:latest
-      - echo Canary release started
-      - aws lambda invoke --function-name SlowDeployToQA1 --payload '{"runtime_service_name":"echo_server:'$TARGET_ENV'"}' response.json
-      - echo Canary release completed
+      - docker push $REPOSITORY_URI:$TARGET_ENV
