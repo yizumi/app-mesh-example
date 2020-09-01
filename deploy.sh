@@ -93,8 +93,8 @@ print_endpoint() {
 
 deploy_stacks() {
     # deploy_images
-    # deploy_infra
-    # deploy_mesh
+    deploy_infra
+    deploy_mesh
     deploy_app
 
     print_bastion
