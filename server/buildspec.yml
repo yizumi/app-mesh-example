@@ -2,10 +2,10 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - if [ -z "$TARGET_ENV" ]; then echo 'Missing TARGET_ENV'; exit 1; fi
-      - export REPOSITORY_URI=373656256964.dkr.ecr.ap-northeast-1.amazonaws.com/echo/server
+      - if [ -z "$TAG" ]; then echo 'Missing TAG'; exit 1; fi
+      - if [ -z "$REPOSITORY_URI" ]; then echo 'Missing REPOSITORY_URI'; exit 1; fi
+      - echo TAG is $TAG
       - echo REPOSITORY_URI is $REPOSITORY_URI
-      - echo TARGET_ENV is $TARGET_ENV
       - aws --version
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --region ap-northeast-1 --no-include-email)
@@ -14,9 +14,9 @@ phases:
       - echo Build started on `date`
       - echo Building the Doker Image
       - docker build -t echo/server ./server
-      - docker tag echo/server $REPOSITORY_URI:$TARGET_ENV
+      - docker tag echo/server $REPOSITORY_URI:$TAG
       - echo Build completed on `date`
   post_build:
     commands:
       - echo Pushing docker image
-      - docker push $REPOSITORY_URI:$TARGET_ENV
+      - docker push $REPOSITORY_URI:$TAG
